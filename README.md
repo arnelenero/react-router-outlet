@@ -4,6 +4,8 @@ React Router Outlet provides a very simple, declarative way to define your React
 
 ## Prerequisite
 
+This library requires React Router v5 as peer dependency.
+
 To enable routing, the app would have a `<Router>` instance at a top-level component, ideally the `<App>`. You will only need to have **one** such instance for the entire app. This is provided by the standard **React Router**, not this library. You can check the React Router [official documentation](https://reacttraining.com/react-router/core/api/Router) for details.
 
 ## The Router Outlet
