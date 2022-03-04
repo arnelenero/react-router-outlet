@@ -1,6 +1,6 @@
 {
   "name": "react-router-outlet",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "React Router Outlet - Angular-inspired router outlet for React Router",
   "keywords": [
     "react",
@@ -14,10 +14,11 @@
   "repository": "github:arnelenero/react-router-outlet",
   "main": "lib/index.js",
   "module": "es/index.js",
+  "typings": "./index.d.ts",
   "files": [
     "lib",
     "es",
-    "src"
+    "index.d.ts"
   ],
   "scripts": {
     "build:lib": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
@@ -30,7 +31,7 @@
     "test:cov": "npm test -- --coverage"
   },
   "peerDependencies": {
-    "react": "^16.7.0",
+    "react": ">=16.7.0",
     "react-router": "^5.0.0"
   },
   "dependencies": {
