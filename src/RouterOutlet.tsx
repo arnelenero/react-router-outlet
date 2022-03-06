@@ -157,7 +157,7 @@ export function RouterOutlet<P extends object>(props: RouterOutletProps<P>) {
         path={r.path}
         exact={r.exact}
         strict={r.strict}
-        render={props =>
+        render={() =>
           Suspense ? (
             <Suspense fallback={placeholder || <div />}>
               <r.component

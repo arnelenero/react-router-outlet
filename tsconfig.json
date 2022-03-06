@@ -13,7 +13,7 @@
     "module": "es2020",
     "moduleResolution": "node",
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "importsNotUsedAsValues": "error",
     "outDir": "./build",
     "declarationDir": "./types",

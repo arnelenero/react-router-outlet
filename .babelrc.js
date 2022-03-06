@@ -19,4 +19,5 @@ module.exports = {
     commonjs && ['@babel/transform-modules-commonjs', { loose }],
     ['@babel/transform-runtime', { useESModules: !commonjs }],
   ].filter(Boolean),
+  comments: false,
 }
