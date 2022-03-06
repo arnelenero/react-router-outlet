@@ -33,9 +33,15 @@ type WithOutletProps<P extends object> = Omit<
   'routes' | 'placeholder'
 >
 
-interface DirectRoute<P extends object = {}, Q extends object = {}>
-  extends PathMatcher {
-  component: React.ComponentType<WithOutletProps<P> & WithOptionalSubroutes<Q>>
+interface DirectRoute<
+  P extends object = {},
+  Q extends object = {},
+  C extends Record<string, any> = {},
+> extends PathMatcher {
+  component: React.ComponentType<
+    C & WithOutletProps<P> & WithOptionalSubroutes<Q>
+  >
+  componentProps?: C
   data?: Record<string, any>
   routes?: RouteDefinition<Q>[]
 }
@@ -112,10 +118,18 @@ export function RouterOutlet<P extends object>(props: RouterOutletProps<P>) {
         render={props =>
           Suspense ? (
             <Suspense fallback={placeholder || <div />}>
-              <r.component {...outletProps} routes={r.routes} />
+              <r.component
+                {...outletProps}
+                {...r.componentProps}
+                routes={r.routes}
+              />
             </Suspense>
           ) : (
-            <r.component {...outletProps} routes={r.routes} />
+            <r.component
+              {...outletProps}
+              {...r.componentProps}
+              routes={r.routes}
+            />
           )
         }
       />
