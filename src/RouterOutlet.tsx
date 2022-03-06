@@ -173,7 +173,7 @@ function resolveFromProps<P extends object>(
   return route
 }
 
-export const routePropType = PropTypes.shape({
+const routePropType = PropTypes.shape({
   path: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string),
