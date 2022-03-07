@@ -1,6 +1,6 @@
 {
   "name": "react-router-outlet",
-  "version": "0.2.2-pre.1",
+  "version": "0.2.2",
   "description": "React Router Outlet - Angular-inspired router outlet for React Router",
   "keywords": [
     "react",
@@ -26,7 +26,7 @@
     "build": "npm run clean && npm run compile && npm run build:lib && npm run build:es",
     "clean": "rimraf build types lib es",
     "compile": "tsc",
-    "xprepare": "npm test",
+    "prepare": "npm test",
     "pretest": "npm run build",
     "test": "jest",
     "test:cov": "npm test -- --coverage"

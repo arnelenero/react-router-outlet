@@ -30,7 +30,7 @@ interface PathMatcher {
   strict?: boolean
 }
 
-interface DirectRoute<
+export interface DirectRoute<
   P extends object = any,
   Q extends object = any,
   C extends object = any,
@@ -47,7 +47,7 @@ interface DirectRoute<
   routes?: Routes<Q>
 }
 
-interface GuardedRoute<
+export interface GuardedRoute<
   P extends object = any,
   Q extends object = any,
   C extends object = any,
@@ -70,7 +70,7 @@ interface GuardedRoute<
   push?: boolean
 }
 
-interface RedirectRoute<P extends object = any> extends PathMatcher {
+export interface RedirectRoute<P extends object = any> extends PathMatcher {
   /** Full or partial pattern for route's URL path */
   path: string
 

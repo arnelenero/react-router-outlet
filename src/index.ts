@@ -1,10 +1,17 @@
-export { default as RouterOutlet } from './RouterOutlet'
+export {
+  default as RouterOutlet,
+  isDirect,
+  isGuarded,
+  isRedirect,
+} from './RouterOutlet'
 
 export type {
   RouterOutletProps,
   Routes,
   RouteDefinition,
-  RedirectFn,
+  DirectRoute,
+  GuardedRoute,
+  RedirectRoute,
   RedirectTarget,
   LocationObj,
 } from './RouterOutlet'
