@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react'
 import PropTypes from 'prop-types'
-import { Route, Switch, Redirect } from 'react-router'
+import { Route, Switch, Redirect } from 'react-router-dom'
 
 interface WithOptionalSubroutes<Q extends object = any> {
   routes?: Routes<Q>
