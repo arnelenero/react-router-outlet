@@ -2,6 +2,15 @@ import React, { Suspense } from 'react'
 import PropTypes from 'prop-types'
 import { Route, Switch, Redirect } from 'react-router'
 
+interface WithOptionalSubroutes<Q extends object = any> {
+  routes?: Routes<Q>
+}
+
+type WithCustomOutletProps<P extends object = any> = Omit<
+  RouterOutletProps<P>,
+  'routes' | 'placeholder'
+>
+
 export interface LocationObj {
   pathname?: string
   search?: string
@@ -12,11 +21,6 @@ export interface LocationObj {
 
 export type RedirectTarget = string | LocationObj
 
-export type RedirectFn<P extends object> = (
-  props: RouterOutletProps<P>,
-  route: RouteDefinition<P>,
-) => RedirectTarget
-
 interface PathMatcher {
   /** Full or partial pattern(s) for route's URL path */
   path?: string | string[]
@@ -26,77 +30,102 @@ interface PathMatcher {
   strict?: boolean
 }
 
-interface WithOptionalSubroutes<Q extends object = {}> {
-  routes?: RouteDefinition<Q>[]
-}
-
-type WithOutletProps<P extends object> = Omit<
-  RouterOutletProps<P>,
-  'routes' | 'placeholder'
->
-
 interface DirectRoute<
-  P extends object = {},
-  Q extends object = {},
-  C extends Record<string, any> = {},
+  P extends object = any,
+  Q extends object = any,
+  C extends object = any,
 > extends PathMatcher {
   /** Component to load when the route matches */
   component: React.ComponentType<
-    C & WithOutletProps<P> & WithOptionalSubroutes<Q>
+    C & WithCustomOutletProps<P> & WithOptionalSubroutes<Q>
   >
   /** Optional props to pass to the loaded component */
   componentProps?: C
   /** Optional metadata associated with the route */
   data?: Record<string, any>
   /** Sub-routes for the component's child router outlet (if any) */
-  routes?: RouteDefinition<Q>[]
+  routes?: Routes<Q>
 }
 
-interface GuardedRoute<P extends object = {}, Q extends object = {}>
-  extends DirectRoute<P, Q> {
+interface GuardedRoute<
+  P extends object = any,
+  Q extends object = any,
+  C extends object = any,
+> extends DirectRoute<P, Q, C> {
   /** Route guard function. Should evaluate to `true` for the routing to proceed. */
-  canEnter: (props: RouterOutletProps<P>, route: RouteDefinition<P>) => boolean
+  canEnter: (props: RouterOutletProps<P>, route: GuardedRoute<P>) => boolean
 
   /**
-   * Redirects to a different route whenever the guard function evaluates to `false`
+   * Redirects to a different route whenever the guard function
+   * evaluates to `false`
    *
-   * You can specify a lazy-evaluated function if the redirection must depend on props of the outlet:
-   * ```
-   *   (props: RouterOutletProps, route: RouteDefinition) => RedirectTarget
-   * ```
+   * You can specify it as callback function if the redirection
+   * must depend on props of the outlet.
    */
-  fallback: RedirectTarget | RedirectFn<P>
+  fallback:
+    | RedirectTarget
+    | ((props: RouterOutletProps<P>, route: GuardedRoute<P>) => RedirectTarget)
 
   /** If `true`, redirecting will push a new history entry instead of replacing the current */
   push?: boolean
 }
 
-interface RedirectRoute<P extends object = {}> extends PathMatcher {
+interface RedirectRoute<P extends object = any> extends PathMatcher {
   /** Full or partial pattern for route's URL path */
   path: string
 
   /**
    * Unconditionally redirects to a different route
    *
-   * You can specify a lazy-evaluated function if the redirection must depend on props of the outlet:
-   * ```
-   *   (props: RouterOutletProps, route: RouteDefinition) => RedirectTarget
-   * ```
+   * You can specify it as callback function if the redirection
+   * must depend on props of the outlet.
    */
-  redirectTo: RedirectTarget | RedirectFn<P>
+  redirectTo:
+    | RedirectTarget
+    | ((props: RouterOutletProps<P>, route: RedirectRoute<P>) => RedirectTarget)
 
   /** If `true`, redirecting will push a new history entry instead of replacing the current */
   push?: boolean
 }
 
 /** Declarative definition format for routes */
-export type RouteDefinition<P extends object = {}, Q extends object = {}> =
-  | DirectRoute<P, Q>
-  | GuardedRoute<P, Q>
+export type RouteDefinition<P extends object = any> =
+  | DirectRoute<P>
+  | GuardedRoute<P>
   | RedirectRoute<P>
 
 /** List of declarative route definitions */
-export type Routes<P extends object = {}> = RouteDefinition<P, any>[]
+export type Routes<P extends object = any> = RouteDefinition<P>[]
+
+/**
+ * Returns whether the route is directed to a component
+ *
+ * @param route
+ * @returns a type predicate
+ */
+export function isDirect(route: RouteDefinition): route is DirectRoute {
+  return (route as DirectRoute).component !== undefined
+}
+
+/**
+ * Returns whether the route is guarded
+ *
+ * @param route
+ * @returns a type predicate
+ */
+export function isGuarded(route: RouteDefinition): route is GuardedRoute {
+  return (route as GuardedRoute).canEnter !== undefined
+}
+
+/**
+ * Returns whether the route is a redirect
+ *
+ * @param route
+ * @returns a type predicate
+ */
+export function isRedirect(route: RouteDefinition): route is RedirectRoute {
+  return (route as RedirectRoute).redirectTo !== undefined
+}
 
 /** Standard props for `RouterOutlet` component */
 export type RouterOutletProps<P extends object> = {
@@ -114,15 +143,8 @@ export type RouterOutletProps<P extends object> = {
 export function RouterOutlet<P extends object>(props: RouterOutletProps<P>) {
   const { routes, placeholder, ...outletProps } = props
 
-  type ResolvedFallback<R extends GuardedRoute<P, any>> = R & {
-    fallback: RedirectTarget
-  }
-  type ResolvedRedirect<R extends RedirectRoute<P>> = R & {
-    redirectTo: RedirectTarget
-  }
-
-  const redirectJsx = (route: RouteDefinition<P>, index: number) => {
-    const r = route as ResolvedRedirect<RedirectRoute<P>>
+  const redirectJsx = (route: RouteDefinition, index: number) => {
+    const r = route as RedirectRoute & { redirectTo: RedirectTarget }
     return (
       <Redirect
         key={index}
@@ -135,8 +157,8 @@ export function RouterOutlet<P extends object>(props: RouterOutletProps<P>) {
     )
   }
 
-  const fallbackJsx = (route: RouteDefinition<P>, index: number) => {
-    const r = route as ResolvedFallback<GuardedRoute<P>>
+  const fallbackJsx = (route: RouteDefinition, index: number) => {
+    const r = route as GuardedRoute & { fallback: RedirectTarget }
     return (
       <Redirect
         key={index}
@@ -149,31 +171,23 @@ export function RouterOutlet<P extends object>(props: RouterOutletProps<P>) {
     )
   }
 
-  const routeJsx = (route: RouteDefinition<P>, index: number) => {
-    const r = route as DirectRoute<P>
+  const routeJsx = (route: RouteDefinition, index: number) => {
+    const r = route as DirectRoute
     return (
       <Route
         key={index}
         path={r.path}
         exact={r.exact}
         strict={r.strict}
-        render={() =>
-          Suspense ? (
-            <Suspense fallback={placeholder || <div />}>
-              <r.component
-                {...outletProps}
-                {...r.componentProps}
-                routes={r.routes}
-              />
-            </Suspense>
-          ) : (
+        render={() => (
+          <Suspense fallback={placeholder || <div />}>
             <r.component
               {...outletProps}
               {...r.componentProps}
               routes={r.routes}
             />
-          )
-        }
+          </Suspense>
+        )}
       />
     )
   }
@@ -183,9 +197,9 @@ export function RouterOutlet<P extends object>(props: RouterOutletProps<P>) {
       {routes.map((route, index) => {
         route = resolveFromProps(route, props)
 
-        return 'redirectTo' in route
+        return isRedirect(route)
           ? redirectJsx(route, index)
-          : 'canEnter' in route && !route.canEnter(props, route)
+          : isGuarded(route) && !route.canEnter(props, route)
           ? fallbackJsx(route, index)
           : routeJsx(route, index)
       })}
@@ -193,23 +207,24 @@ export function RouterOutlet<P extends object>(props: RouterOutletProps<P>) {
   )
 }
 
-function resolveFromProps<P extends object>(
-  route: RouteDefinition<P>,
-  props: RouterOutletProps<P>,
-): RouteDefinition<P> {
-  const resolveRedirect = (val: RedirectTarget | RedirectFn<P>) =>
+function resolveFromProps(
+  route: RouteDefinition,
+  props: RouterOutletProps<any>,
+): RouteDefinition {
+  const resolveValue = (val: any) =>
     typeof val === 'function' ? val(props, route) : val
 
-  if ('redirectTo' in route)
+  if (isRedirect(route)) {
     return {
       ...route,
-      redirectTo: resolveRedirect(route.redirectTo),
+      redirectTo: resolveValue(route.redirectTo),
     }
+  }
 
-  if ('fallback' in route)
+  if (isGuarded(route))
     return {
       ...route,
-      fallback: resolveRedirect(route.fallback),
+      fallback: resolveValue(route.fallback),
     }
 
   return route
