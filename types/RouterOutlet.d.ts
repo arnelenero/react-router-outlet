@@ -21,6 +21,8 @@ export declare namespace RouterOutlet {
             exact: PropTypes.Requireable<boolean>;
             strict: PropTypes.Requireable<boolean>;
             component: PropTypes.Requireable<object>;
+            data: PropTypes.Requireable<object>;
+            componentProps: PropTypes.Requireable<object>;
             canEnter: PropTypes.Requireable<(...args: any[]) => any>;
             fallback: PropTypes.Requireable<string | object>;
             redirectTo: PropTypes.Requireable<string | object>;

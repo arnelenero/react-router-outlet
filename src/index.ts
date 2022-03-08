@@ -3,7 +3,6 @@ export { default as isDirect } from './isDirect'
 export { default as isGuarded } from './isGuarded'
 export { default as isRedirect } from './isRedirect'
 
-export type { RouterOutletProps } from './RouterOutlet'
 export type { default as Routes } from './types/Routes'
 export type { default as RouteDefinition } from './types/RouteDefinition'
 export type { default as DirectRoute } from './types/DirectRoute'

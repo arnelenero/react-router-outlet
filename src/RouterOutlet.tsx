@@ -124,6 +124,8 @@ const routePropType = PropTypes.shape({
   exact: PropTypes.bool,
   strict: PropTypes.bool,
   component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  data: PropTypes.object,
+  componentProps: PropTypes.object,
   canEnter: PropTypes.func,
   fallback: PropTypes.oneOfType([
     PropTypes.func,

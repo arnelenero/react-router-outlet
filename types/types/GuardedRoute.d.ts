@@ -15,7 +15,8 @@ export default interface GuardedRoute<P extends object = any, Q extends object =
      * Redirects to a different route whenever the guard function
      * evaluates to `false`
      *
-     * You can specify it as callback function if the redirection
+     * You can specify either a URL path or a `LocationObj`.
+     * This can also be a callback function if the redirect
      * must depend on props of the outlet.
      */
     fallback: RedirectTarget | ((props: RouterOutletProps<P>, route: GuardedRoute<P>) => RedirectTarget);
