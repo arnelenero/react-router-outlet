@@ -6,6 +6,10 @@ export interface LocationObj {
   key?: string
 }
 
+/**
+ * Target of redirection can either be a URL path or a
+ * full `LocationObj` location descriptor.
+ */
 type RedirectTarget = string | LocationObj
 
 export default RedirectTarget
