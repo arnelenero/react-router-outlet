@@ -1,17 +1,11 @@
-export {
-  default as RouterOutlet,
-  isDirect,
-  isGuarded,
-  isRedirect,
-} from './RouterOutlet'
+export { default as RouterOutlet } from './RouterOutlet'
+export { default as isDirect } from './isDirect'
+export { default as isGuarded } from './isGuarded'
+export { default as isRedirect } from './isRedirect'
 
-export type {
-  RouterOutletProps,
-  Routes,
-  RouteDefinition,
-  DirectRoute,
-  GuardedRoute,
-  RedirectRoute,
-  RedirectTarget,
-  LocationObj,
-} from './RouterOutlet'
+export type { default as Routes } from './types/Routes'
+export type { default as RouteDefinition } from './types/RouteDefinition'
+export type { default as DirectRoute } from './types/DirectRoute'
+export type { default as GuardedRoute } from './types/GuardedRoute'
+export type { default as RedirectRoute } from './types/RedirectRoute'
+export type { default as RedirectTarget } from './types/RedirectTarget'
